@@ -23,6 +23,8 @@ public class taskApplication {
 
 	private JFrame frame;
 	private JTextField textField;
+	int col,row;
+	Vector<String> items = new Vector<String>();
 	JPanel Notes; 
 
 	/**
@@ -65,6 +67,11 @@ public class taskApplication {
 					FileWriter fw = new FileWriter("input.txt", true);
 					BufferedWriter bw = new BufferedWriter(fw);
 					PrintWriter out = new PrintWriter(bw);
+					items.add(newItem);
+					JCheckBox c1 = new JCheckBox(newItem);
+					items.add(newItem);
+					Notes.add(c1," cell "+col+" "+row);
+					row++;
 					out.println(newItem);
 					out.close();
 					textField.setText("");
@@ -116,9 +123,6 @@ public class taskApplication {
 			FileReader fr = new FileReader("input.txt");
 			BufferedReader br = new BufferedReader(fr);
 			String line;
-			Vector<String> items = new Vector<String>();
-			
-			int col,row;
 			col = 1;
 			row = 2;
 			while((line = br.readLine())!=null) {

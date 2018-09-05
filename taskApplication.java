@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.GridBagConstraints;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.JButton;
 import net.miginfocom.swing.MigLayout;
 import java.awt.Font;
@@ -70,7 +71,8 @@ public class taskApplication {
 					PrintWriter out = new PrintWriter(bw);
 					items.add(newItem);
 					JCheckBox c1 = new JCheckBox(newItem);
-					items.add(newItem);
+					checkboxListener cl = new checkboxListener();
+					c1.addActionListener(cl);
 					Notes.add(c1," cell "+col+" "+row);
 					row++;
 					out.println(newItem);
@@ -113,6 +115,12 @@ public class taskApplication {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch(Exception exp) {
+			exp.printStackTrace();
+		}
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0};
@@ -132,17 +140,18 @@ public class taskApplication {
 		Notes.setBackground(new Color(204, 204, 204));
 		Notes.setLayout(new MigLayout("", "[][grow][1px][grow][]", "[][][][][][1px][][][]"));
 		Notes.setLayout(new MigLayout("", "[1px][][][]", "[1px][]"));
+		Notes.setLayout(new MigLayout("", "[1px][][][]", "[1px][]"));
 		
 		JLabel lblNotes = new JLabel("Tasks");
 		lblNotes.setFont(new Font("Lucida Grande", Font.BOLD, 18));
-		Notes.add(lblNotes, "cell 1 0,alignx center,growy");
+		Notes.add(lblNotes, "cell 1 0,grow");
 		
 		textField = new JTextField();
 		Notes.add(textField, "cell 1 1,grow");
 		textField.setColumns(10);
 		
 		JButton btnAdd = new JButton("+");
-		Notes.add(btnAdd, "cell 2 1,alignx left,growy");
+		Notes.add(btnAdd, "cell 2 1,grow");
 		Listener l = new Listener();
 		btnAdd.addActionListener(l);
 		try {

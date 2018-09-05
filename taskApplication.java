@@ -87,6 +87,33 @@ public class taskApplication {
 			}
 		}
 	}
+	
+	public class checkboxListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			//System.out.println(e.paramString());
+			System.out.println("********************************************************************");
+			System.out.println("Before Deleting the values in the vector are:");
+			for(String a:items) {
+				System.out.println(a);
+			}
+			System.out.println("********************************************************************\n");
+			
+			JCheckBox j = (JCheckBox)e.getSource();
+			Notes.remove(j);
+			items.remove(j.getText());
+			System.out.println("********************************************************************");
+			System.out.println("After Deleting the values in the vector are:");
+			for(String a:items) {
+				System.out.println(a);
+			}
+			System.out.println("********************************************************************\n");
+			Notes.revalidate();
+			Notes.repaint();
+			//Rewrite the contents of the file after deleting the tasks
+		}
+	}
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
@@ -131,6 +158,8 @@ public class taskApplication {
 			row = 2;
 			while((line = br.readLine())!=null) {
 				JCheckBox c1 = new JCheckBox(line);
+				checkboxListener cl = new checkboxListener();
+				c1.addActionListener(cl);
 				items.add(line);
 				Notes.add(c1," cell "+col+" "+row);
 				row++;
@@ -142,3 +171,4 @@ public class taskApplication {
 		}
 	}
 }
+

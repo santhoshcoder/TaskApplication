@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import net.miginfocom.swing.MigLayout;
 import java.awt.Font;
+import javax.swing.JScrollPane;
 
 public class taskApplication {
 
@@ -26,6 +27,7 @@ public class taskApplication {
 	int col,row;
 	Vector<String> items = new Vector<String>();
 	JPanel Notes; 
+	private JScrollPane scrollPane;
 
 	/**
 	 * Launch the application.
@@ -96,16 +98,18 @@ public class taskApplication {
 		gridBagLayout.rowWeights = new double[]{1.0, Double.MIN_VALUE};
 		frame.getContentPane().setLayout(gridBagLayout);
 		
+		scrollPane = new JScrollPane();
+		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+		gbc_scrollPane.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane.gridx = 0;
+		gbc_scrollPane.gridy = 0;
+		frame.getContentPane().add(scrollPane, gbc_scrollPane);
+		
 		Notes = new JPanel();
+		scrollPane.setViewportView(Notes);
 		Notes.setBackground(new Color(204, 204, 204));
-		GridBagConstraints gbc_Notes = new GridBagConstraints();
-		gbc_Notes.fill = GridBagConstraints.BOTH;
-		gbc_Notes.gridx = 0;
-		gbc_Notes.gridy = 0;
-		frame.getContentPane().add(Notes, gbc_Notes);
 		Notes.setLayout(new MigLayout("", "[][grow][1px][grow][]", "[][][][][][1px][][][]"));
 		Notes.setLayout(new MigLayout("", "[1px][][][]", "[1px][]"));
-		Listener l = new Listener();
 		
 		JLabel lblNotes = new JLabel("Tasks");
 		lblNotes.setFont(new Font("Lucida Grande", Font.BOLD, 18));
@@ -116,9 +120,9 @@ public class taskApplication {
 		textField.setColumns(10);
 		
 		JButton btnAdd = new JButton("+");
-		btnAdd.addActionListener(l);
 		Notes.add(btnAdd, "cell 2 1,alignx left,growy");
-		
+		Listener l = new Listener();
+		btnAdd.addActionListener(l);
 		try {
 			FileReader fr = new FileReader("input.txt");
 			BufferedReader br = new BufferedReader(fr);

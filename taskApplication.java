@@ -4,11 +4,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.Color;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.util.Vector;
 import javax.swing.JLabel;
 import java.awt.GridBagLayout;
@@ -67,16 +64,14 @@ public class taskApplication {
 				try
 				{
 					FileWriter fw = new FileWriter("input.txt", true);  //Appending File Contents
-					BufferedWriter bw = new BufferedWriter(fw);
-					PrintWriter out = new PrintWriter(bw);
+					fw.write(newItem+"\n");
+					fw.close();
 					items.add(newItem);
 					JCheckBox c1 = new JCheckBox(newItem);
 					checkboxListener cl = new checkboxListener();
 					c1.addActionListener(cl);
 					Notes.add(c1," cell "+col+" "+row);
 					row++;
-					out.println(newItem);
-					out.close();
 					textField.setText("");
 				}
 				catch (Exception exp)
@@ -99,8 +94,7 @@ public class taskApplication {
 			//Rewrite the contents of the file after deleting the tasks
 			try
 			{
-				File myFoo = new File("input.txt");
-				FileWriter fooWriter = new FileWriter(myFoo, false);
+				FileWriter fooWriter = new FileWriter("input.txt", false);
 				for(String s:items) {
 					fooWriter.write(s+"\n");
 				}

@@ -5,6 +5,7 @@ import javax.swing.JPanel;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -56,17 +57,15 @@ public class taskApplication {
 	 * Initialize the contents of the frame.
 	 */
 	public class Listener implements ActionListener{
-
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			System.out.println("Button Clicked");
 			// TODO Auto-generated method stub
 			String newItem = textField.getText();
 			newItem.trim();
 			if(newItem.trim().length() > 0){
 				try
 				{
-					FileWriter fw = new FileWriter("input.txt", true);
+					FileWriter fw = new FileWriter("input.txt", true);  //Appending File Contents
 					BufferedWriter bw = new BufferedWriter(fw);
 					PrintWriter out = new PrintWriter(bw);
 					items.add(newItem);
@@ -87,31 +86,27 @@ public class taskApplication {
 			}
 		}
 	}
-	
 	public class checkboxListener implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			//System.out.println(e.paramString());
-			System.out.println("********************************************************************");
-			System.out.println("Before Deleting the values in the vector are:");
-			for(String a:items) {
-				System.out.println(a);
-			}
-			System.out.println("********************************************************************\n");
-			
 			JCheckBox j = (JCheckBox)e.getSource();
 			Notes.remove(j);
 			items.remove(j.getText());
-			System.out.println("********************************************************************");
-			System.out.println("After Deleting the values in the vector are:");
-			for(String a:items) {
-				System.out.println(a);
-			}
-			System.out.println("********************************************************************\n");
 			Notes.revalidate();
 			Notes.repaint();
 			//Rewrite the contents of the file after deleting the tasks
+			try
+			{
+				File myFoo = new File("input.txt");
+				FileWriter fooWriter = new FileWriter(myFoo, false);
+				for(String s:items) {
+					fooWriter.write(s+"\n");
+				}
+				fooWriter.close();
+			}
+			catch(Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 	}
 	private void initialize() {

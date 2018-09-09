@@ -1,6 +1,9 @@
 import java.awt.EventQueue;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 import javax.swing.JFrame;
 
@@ -22,8 +25,18 @@ public class tasker {
 				}
 			}
 		});
-		try {
-			getConnection();
+		try 
+		{
+			//Select data from the database
+			Connection con = getConnection();
+			PreparedStatement pr = con.prepareStatement("SELECT * FROM initial");
+			ResultSet rs = pr.executeQuery();
+			
+			while(rs.next()) {
+				System.out.println(rs.getString("task"));
+				System.out.println(rs.getString("cat"));
+				System.out.println(rs.getString("status"));
+			}
 		}
 		catch(Exception e) {
 			e.printStackTrace();

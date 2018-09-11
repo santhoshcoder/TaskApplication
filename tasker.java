@@ -217,6 +217,30 @@ public class tasker {
 			e.printStackTrace();
 		}
 	}
+	public class checkboxListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			JCheckBox c = (JCheckBox)e.getSource();
+			String text = c.getText();
+			try {
+				System.out.println("Selected Category is: "+selected_cat);
+				System.out.println("Selected Task is: "+text);
+				Connection con = getConnection();
+				PreparedStatement pr = con.prepareStatement("UPDATE INITIAL SET status = ? WHERE cat = ? AND task = ?");
+				pr.setString(1,"c");
+				pr.setString(2,selected_cat);
+				pr.setString(3,text);
+				pr.executeUpdate();
+				panel_2.remove(c);
+				panel_2.revalidate();
+				panel_2.repaint();
+			}
+			catch(Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
 	private void addPanel2Elements() {
 		// TODO Auto-generated method stub
 		try 
@@ -224,14 +248,17 @@ public class tasker {
 			//System.out.println("Selected Category is:"+selected_cat);
 			//Select data from the database
 			Connection con = getConnection();
-			PreparedStatement pr = con.prepareStatement("SELECT task FROM initial WHERE cat = ? AND task IS NOT NULL");
+			PreparedStatement pr = con.prepareStatement("SELECT task FROM initial WHERE cat = ? AND task IS NOT NULL AND status = ?");
 			pr.setString(1,selected_cat);
+			pr.setString(2,"nc");
 			ResultSet rs = pr.executeQuery();
 			while(rs.next()) {
 				String name = rs.getString("task");
 				System.out.println("Task Name is:"+name);	
 				String task_name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
 				JCheckBox j1 = new JCheckBox(task_name);
+				checkboxListener clr = new checkboxListener();
+				j1.addActionListener(clr);
 				panel_2.add(j1,"cell "+panel_2col+" "+panel_2row+",growx");
 				panel_2row++;
 			}

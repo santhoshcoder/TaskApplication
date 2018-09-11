@@ -28,19 +28,19 @@ import javax.swing.border.LineBorder;
 public class tasker {
 	
 	private JFrame frmTasker;
-	int panel_2row = 0,panel_2col = 1,panel_1row = 2,panel_1col = 0;
+	int panel_2row = 0,panel_2col = 5,panel_1row = 2,panel_1col = 0;
 	String selected_cat = "uncat";
 	JPanel panel_1 = new JPanel();
 	JPanel panel_2 = new JPanel();
 	private JTextField textField;
+	public void resetPanel2(){
+		panel_2.removeAll();
+		panel_2col = 5;
+		panel_2row = 0;
+	}
 	/**
 	 * Launch the application.
 	 */
-	public void resetPanel2(){
-		panel_2.removeAll();
-		panel_2col = 1;
-		panel_2row = 0;
-	}
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -58,24 +58,6 @@ public class tasker {
 				}
 			}
 		});
-		/*
-		try 
-		{
-			//Select data from the database
-			Connection con = getConnection();
-			PreparedStatement pr = con.prepareStatement("SELECT * FROM initial");
-			ResultSet rs = pr.executeQuery();
-			
-			while(rs.next()) {
-				System.out.println(rs.getString("task"));
-				System.out.println(rs.getString("cat"));
-				System.out.println(rs.getString("status"));
-			}
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-		*/
 	}
 	public static Connection getConnection() throws Exception{
 		try
@@ -86,7 +68,6 @@ public class tasker {
 			   String password = "";
 			   Class.forName(driver);
 			   Connection conn = DriverManager.getConnection(url,username,password);
-			   //System.out.println("Connected");
 			   return conn;
 		  } 
 		  catch(Exception e)
@@ -106,26 +87,19 @@ public class tasker {
 	 */
 	private void initialize() {
 		frmTasker = new JFrame();
+		frmTasker.getContentPane().setBackground(Color.WHITE);
 		frmTasker.setTitle("Tasker");
-		frmTasker.setBounds(100, 100, 450, 300);
+		frmTasker.setBounds(100, 100, 474, 528);
 		frmTasker.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmTasker.getContentPane().setLayout(null);
-		
-		//JPanel panel_1 = new JPanel();
 		panel_1.setForeground(new Color(128, 128, 128));
 		panel_1.setBackground(Color.WHITE);
-		panel_1.setBounds(0, 0, 150, 253);
+		panel_1.setBounds(0, 50, 150, 432);
 		frmTasker.getContentPane().add(panel_1);
 		panel_1.setLayout(new MigLayout("", "[grow]", "[][]"));
-		
-		JLabel lblCategories = new JLabel("Categories");
-		lblCategories.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		panel_1.add(lblCategories, "cell 0 0,growx");
-		
 		textField = new JTextField();
-		panel_1.add(textField, "flowx,cell 0 1,growx");
+		panel_1.add(textField, "flowx,cell 0 0,growx");
 		textField.setColumns(10);
-		
 		JButton button = new JButton("+");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -133,10 +107,14 @@ public class tasker {
 				catName = catName.trim();
 				if(catName.length() != 0){
 					catName = catName.toLowerCase();
-					//System.out.println("Valid Category Name:"+catName);
 					//Check if the category already exists
 					try {
 						Connection con = getConnection();
+						/* Future Change:
+						 * Setup the database with primary keys and reduce it to normal form. Once the tables
+						 * are set perfectly you don't need to check if the category already exists or not
+						 * (Directly insert the new record and make the changes depending on query status)
+						 */
 						PreparedStatement pr = con.prepareStatement("SELECT * FROM initial WHERE cat = ?");
 						pr.setString(1,catName);
 						ResultSet rs = pr.executeQuery();
@@ -149,14 +127,13 @@ public class tasker {
 							String sql = "INSERT INTO initial values("+null+","+"'"+catName+"'"+","+null+")";
 							s.execute(sql);
 							System.out.println("Query Executed");
-							
+							//Capitalize the button for clean look.
 							String cap_column_name = catName.substring(0, 1).toUpperCase() + catName.substring(1).toLowerCase();
 							JButton j = new JButton(cap_column_name);
 							categoryListener cl = new categoryListener();
 							j.addActionListener(cl);
 							panel_1.add(j,"cell "+panel_1col+" "+panel_1row+",growx");
 							panel_1row++;
-							
 							panel_1.revalidate();
 							panel_1.repaint();
 						}
@@ -171,13 +148,35 @@ public class tasker {
 				textField.setText("");
 			}
 		});
-		panel_1.add(button, "cell 0 1");
-		
+		panel_1.add(button, "cell 0 0");
 		//JPanel panel_2 = new JPanel();
 		panel_2.setBackground(Color.WHITE);
-		panel_2.setBounds(148, 0, 284, 253);
+		panel_2.setBounds(148, 50, 315, 432);
 		frmTasker.getContentPane().add(panel_2);
-		panel_2.setLayout(new MigLayout("", "[]", "[]"));
+		panel_2.setLayout(new MigLayout("", "[][][][][][]", "[][][][]"));
+		
+		JPanel panel = new JPanel();
+		panel.setBackground(Color.WHITE);
+		panel.setBounds(0, 0, 150, 50);
+		frmTasker.getContentPane().add(panel);
+		panel.setLayout(null);
+		
+		JLabel lblCategories = new JLabel("Categories");
+		lblCategories.setForeground(new Color(0, 0, 0));
+		lblCategories.setBounds(22, 10, 95, 25);
+		panel.add(lblCategories);
+		lblCategories.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		JPanel panel_3 = new JPanel();
+		panel_3.setBackground(Color.WHITE);
+		panel_3.setBounds(148, 0, 315, 50);
+		frmTasker.getContentPane().add(panel_3);
+		panel_3.setLayout(null);
+		
+		JLabel lblTasks = new JLabel("Tasks");
+		lblTasks.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblTasks.setBounds(36, 13, 56, 16);
+		panel_3.add(lblTasks);
 		
 		addPanel1Elements();
 	}
@@ -235,7 +234,6 @@ public class tasker {
 				JCheckBox j1 = new JCheckBox(task_name);
 				panel_2.add(j1,"cell "+panel_2col+" "+panel_2row+",growx");
 				panel_2row++;
-			
 			}
 			panel_2.revalidate();
 			panel_2.repaint();

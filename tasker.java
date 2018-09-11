@@ -23,6 +23,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import java.awt.Color;
+import javax.swing.border.LineBorder;
 
 public class tasker {
 	
@@ -35,6 +36,11 @@ public class tasker {
 	/**
 	 * Launch the application.
 	 */
+	public void resetPanel2(){
+		panel_2.removeAll();
+		panel_2col = 1;
+		panel_2row = 0;
+	}
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -52,6 +58,7 @@ public class tasker {
 				}
 			}
 		});
+		/*
 		try 
 		{
 			//Select data from the database
@@ -68,6 +75,7 @@ public class tasker {
 		catch(Exception e) {
 			e.printStackTrace();
 		}
+		*/
 	}
 	public static Connection getConnection() throws Exception{
 		try
@@ -129,6 +137,19 @@ public class tasker {
 		
 		addPanel1Elements();
 	}
+	public class categoryListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			JButton b = (JButton) e.getSource();
+			String text = b.getText();
+			selected_cat = text.substring(0, 1).toLowerCase() + text.substring(1);
+			resetPanel2();
+			addPanel2Elements();
+		}
+		
+	}
 	private void addPanel1Elements() {
 		// TODO Auto-generated method stub
 		try 
@@ -140,9 +161,34 @@ public class tasker {
 			
 			while(rs.next()) {
 				String column_name = rs.getString("cat");
-				JCheckBox j = new JCheckBox(column_name);
+				String cap_column_name = column_name.substring(0, 1).toUpperCase() + column_name.substring(1).toLowerCase();
+				JButton j = new JButton(cap_column_name);
+				categoryListener cl = new categoryListener();
+				j.addActionListener(cl);
 				panel_1.add(j,"cell "+panel_1col+" "+panel_1row+",growx");
 				panel_1row++;
+			}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	private void addPanel2Elements() {
+		// TODO Auto-generated method stub
+		try 
+		{
+			//System.out.println("Selected Category is:"+selected_cat);
+			//Select data from the database
+			Connection con = getConnection();
+			PreparedStatement pr = con.prepareStatement("SELECT task FROM initial WHERE cat = ?");
+			pr.setString(1,selected_cat);
+			ResultSet rs = pr.executeQuery();
+			while(rs.next()) {
+				String name = rs.getString("task");
+				String task_name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+				JCheckBox j1 = new JCheckBox(task_name);
+				panel_2.add(j1,"cell "+panel_2col+" "+panel_2row+",growx");
+				panel_2row++;
 			}
 			panel_2.revalidate();
 			panel_2.repaint();

@@ -4,29 +4,19 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
 import javax.swing.JFrame;
 import net.miginfocom.swing.MigLayout;
-import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import java.awt.Font;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import javax.swing.JTable;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import java.awt.Color;
-import javax.swing.border.LineBorder;
-
-import com.sun.corba.se.spi.orbutil.fsm.State;
-
 public class tasker {
 	
 	private JFrame frmTasker;
@@ -36,6 +26,7 @@ public class tasker {
 	JPanel panel_2 = new JPanel();
 	JTextField jt = new JTextField();
 	JButton jb = new JButton("+");
+	JButton button = new JButton("+");
 	private JTextField textField;
 	public void resetPanel2(){
 		panel_2.removeAll();
@@ -101,58 +92,6 @@ public class tasker {
 		panel_1.setBounds(0, 50, 150, 432);
 		frmTasker.getContentPane().add(panel_1);
 		panel_1.setLayout(new MigLayout("", "[grow]", "[][]"));
-		textField = new JTextField();
-		panel_1.add(textField, "flowx,cell 0 0,growx");
-		textField.setColumns(10);
-		JButton button = new JButton("+");
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				String catName = textField.getText();
-				catName = catName.trim();
-				if(catName.length() != 0){
-					catName = catName.toLowerCase();
-					//Check if the category already exists
-					try {
-						Connection con = getConnection();
-						/* Future Change:
-						 * Setup the database with primary keys and reduce it to normal form. Once the tables
-						 * are set perfectly you don't need to check if the category already exists or not
-						 * (Directly insert the new record and make the changes depending on query status)
-						 */
-						PreparedStatement pr = con.prepareStatement("SELECT * FROM initial WHERE cat = ?");
-						pr.setString(1,catName);
-						ResultSet rs = pr.executeQuery();
-						if(rs.next()) {
-							System.out.println("Category Already Exists");
-						}
-						else {
-							pr = con.prepareStatement("INSERT INTO initial values(?,?,?)");
-							Statement s = con.createStatement();
-							String sql = "INSERT INTO initial values("+null+","+"'"+catName+"'"+","+null+")";
-							s.execute(sql);
-							System.out.println("Query Executed");
-							//Capitalize the button for clean look.
-							String cap_column_name = catName.substring(0, 1).toUpperCase() + catName.substring(1).toLowerCase();
-							JButton j = new JButton(cap_column_name);
-							categoryListener cl = new categoryListener();
-							j.addActionListener(cl);
-							panel_1.add(j,"cell "+panel_1col+" "+panel_1row+",growx");
-							panel_1row++;
-							panel_1.revalidate();
-							panel_1.repaint();
-						}
-					}
-					catch(Exception e) {
-						e.printStackTrace();
-					}
-				}
-				else {
-					System.out.println("Invalid Category Name:"+"*"+catName+"*");
-				}
-				textField.setText("");
-			}
-		});
-		panel_1.add(button, "cell 0 0");
 		//JPanel panel_2 = new JPanel();
 		panel_2.setBackground(Color.WHITE);
 		panel_2.setBounds(148, 50, 315, 432);
@@ -181,7 +120,7 @@ public class tasker {
 		lblTasks.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		lblTasks.setBounds(36, 13, 56, 16);
 		panel_3.add(lblTasks);
-		
+		initPanel1();
 		addPanel1Elements();
 	}
 	public class categoryListener implements ActionListener{
@@ -226,6 +165,98 @@ public class tasker {
 			}
 		}
 	}
+	private class removeCat implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			JButton jt = (JButton) e.getSource();
+			String cat = jt.getToolTipText();
+			int n = JOptionPane.showConfirmDialog(panel_2,"Are you sure to execute this command?");
+			System.out.println(n);
+			if(n==0) {
+				/*
+					System.out.println("Yes");
+					Remove cat from database
+					System.out.println("Selected Database is:"+cat);
+				*/
+				try {
+					Connection con = getConnection();
+					Statement st = con.createStatement();
+					String sql = "DELETE FROM initial WHERE cat = "+"'"+cat+"'";
+					st.executeUpdate(sql);
+				}
+				catch (Exception exp) {
+					// TODO: handle exception
+					exp.printStackTrace();
+				}
+				panel_1.removeAll();
+				panel_1row = 2;
+				initPanel1();
+				addPanel1Elements();
+				panel_1.repaint();
+				panel_1.revalidate();
+			}
+		}
+	}
+	private void initPanel1() {
+		textField = new JTextField();
+		panel_1.add(textField, "flowx,cell 0 0,growx");
+		textField.setColumns(10);
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String catName = textField.getText();
+				catName = catName.trim();
+				if(catName.length() != 0){
+					catName = catName.toLowerCase();
+					//Check if the category already exists
+					try {
+						Connection con = getConnection();
+						/* Future Change:
+						 * Setup the database with primary keys and reduce it to normal form. Once the tables
+						 * are set perfectly you don't need to check if the category already exists or not
+						 * (Directly insert the new record and make the changes depending on query status)
+						 */
+						PreparedStatement pr = con.prepareStatement("SELECT * FROM initial WHERE cat = ?");
+						pr.setString(1,catName);
+						ResultSet rs = pr.executeQuery();
+						if(rs.next()) {
+							System.out.println("Category Already Exists");
+						}
+						else {
+							pr = con.prepareStatement("INSERT INTO initial values(?,?,?)");
+							Statement s = con.createStatement();
+							String sql = "INSERT INTO initial values("+null+","+"'"+catName+"'"+","+null+")";
+							s.execute(sql);
+							System.out.println("Query Executed");
+							//Capitalize the button for clean look.
+							String cap_column_name = catName.substring(0, 1).toUpperCase() + catName.substring(1).toLowerCase();
+							JButton j = new JButton(cap_column_name);
+							categoryListener cl = new categoryListener();
+							j.addActionListener(cl);
+							panel_1.add(j,"cell "+panel_1col+" "+panel_1row+",growx");
+							JButton jbt = new JButton("-");
+							removeCat rc = new removeCat();
+							jbt.addActionListener(rc);
+							jbt.setToolTipText(catName);
+							panel_1.add(jbt,"cell "+panel_1col+" "+panel_1row);
+							panel_1row++;
+							panel_1.revalidate();
+							panel_1.repaint();
+						}
+					}
+					catch(Exception e) {
+						e.printStackTrace();
+					}
+				}
+				else {
+					System.out.println("Invalid Category Name:"+"*"+catName+"*");
+				}
+				textField.setText("");
+			}
+		});
+		panel_1.add(button, "cell 0 0");
+	}
 	private void addPanel1Elements() {
 		// TODO Auto-generated method stub
 		try 
@@ -242,6 +273,11 @@ public class tasker {
 				categoryListener cl = new categoryListener();
 				j.addActionListener(cl);
 				panel_1.add(j,"cell "+panel_1col+" "+panel_1row+",growx");
+				JButton jbt = new JButton("-");
+				removeCat rc = new removeCat();
+				jbt.addActionListener(rc);
+				jbt.setToolTipText(column_name);
+				panel_1.add(jbt,"cell "+panel_1col+" "+panel_1row);
 				panel_1row++;
 			}
 		}

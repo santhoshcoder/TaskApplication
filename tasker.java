@@ -32,6 +32,8 @@ public class tasker {
 	String selected_cat = "uncat";
 	JPanel panel_1 = new JPanel();
 	JPanel panel_2 = new JPanel();
+	JTextField jt = new JTextField();
+	JButton jb = new JButton("+");
 	private JTextField textField;
 	public void resetPanel2(){
 		panel_2.removeAll();
@@ -194,6 +196,21 @@ public class tasker {
 		}
 		
 	}
+	public class taskListener implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			String text = jt.getText();
+			text = text.trim();
+			if(text.length() != 0){
+				System.out.println("Entered Text is:"+text);
+				System.out.println("Selected Category is:"+selected_cat);
+				jt.setText("");
+				//Insert the data into database and add a checkbox with data into panel_2
+			}
+		}
+	}
 	private void addPanel1Elements() {
 		// TODO Auto-generated method stub
 		try 
@@ -243,6 +260,12 @@ public class tasker {
 	}
 	private void addPanel2Elements() {
 		// TODO Auto-generated method stub
+		panel_2.add(jt,"cell "+panel_2col+" "+panel_2row);
+		jt.setColumns(10);
+		panel_2.add(jb,"cell "+panel_2col+" "+panel_2row);
+		taskListener t1 = new taskListener();
+		jb.addActionListener(t1);
+		panel_2row++;
 		try 
 		{
 			//System.out.println("Selected Category is:"+selected_cat);

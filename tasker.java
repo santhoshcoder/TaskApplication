@@ -25,6 +25,8 @@ import javax.swing.UIManager;
 import java.awt.Color;
 import javax.swing.border.LineBorder;
 
+import com.sun.corba.se.spi.orbutil.fsm.State;
+
 public class tasker {
 	
 	private JFrame frmTasker;
@@ -207,7 +209,20 @@ public class tasker {
 				System.out.println("Entered Text is:"+text);
 				System.out.println("Selected Category is:"+selected_cat);
 				jt.setText("");
-				//Insert the data into database and add a checkbox with data into panel_2
+				//Insert the data into database
+				try {
+					Connection con = getConnection();
+					Statement st =  con.createStatement();
+					String nc = "nc";
+					String sql = "Insert into initial Values("+"'"+text+"'"+","+"'"+selected_cat+"'"+","+"'"+nc+"'"+")";
+					st.execute(sql);
+				}
+				catch(Exception exc) {
+					exc.printStackTrace();
+				}
+				panel_2.removeAll();
+				panel_2row = 0;
+				addPanel2Elements();
 			}
 		}
 	}
